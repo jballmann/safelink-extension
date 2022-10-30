@@ -1,0 +1,44 @@
+{
+  "type_redirect": {
+    "message": "Weiterleitung - Es wird zu der unteren Adresse weitergeleitet"
+  },
+  "type_trusted": {
+    "message": "Vertrauenswürdig"
+  },
+  "type_suspicious": {
+    "message": "Verdächtig"
+  },
+  "type_unknown": {
+    "message": "Unbekannt"
+  },
+  "sector_edu": {
+    "message": "Bildungseinrichtung"
+  },
+  "sector_fin": {
+    "message": "Bank / Kreditinstitut"
+  },
+  "openURL": {
+    "message": "URL öffnen"
+  },
+  "checkDomain": {
+    "message": "Domain prüfen"
+  },
+  "by": {
+    "message": "Von"
+  },
+  "target": {
+    "message": "Ziel"
+  },
+  "loading": {
+    "message": "Weiterleitungs-Ziel wird ermittelt..."
+  },
+  "noRedirect": {
+    "message": "Keine direkte Weiterleitung. Grund dafür kann beispielsweise ein Passwortschutz oder ungültiger Link sein."
+  },
+  "invalidRedirect": {
+    "message": "Ungültiger Weiterleitungs-Link"
+  },
+  "analyze": {
+    "message": "Analysiere Link..."
+  }
+}

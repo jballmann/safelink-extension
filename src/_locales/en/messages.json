@@ -1,0 +1,44 @@
+{
+  "type_redirect": {
+    "message": "Redirect - Redirects to the address below"
+  },
+  "type_trusted": {
+    "message": "Trustworthy"
+  },
+  "type_suspicious": {
+    "message": "Suspicious"
+  },
+  "type_unknown": {
+    "message": "Unknown"
+  },
+  "sector_edu": {
+    "message": "Education institute"
+  },
+  "sector_fin": {
+    "message": "Bank / Financial institution"
+  },
+  "openURL": {
+    "message": "Open URL"
+  },
+  "checkDomain": {
+    "message": "Check domain"
+  },
+  "by": {
+    "message": "By"
+  },
+  "target": {
+    "message": "Target"
+  },
+  "loading": {
+    "message": "Destination of redirection will be determined..."
+  },
+  "noRedirect": {
+    "message": "No direct forwarding. Reason for this can be, for example, password protection or an invalid link."
+  },
+  "invalidRedirect": {
+    "message": "Invalid redirection link"
+  },
+  "analyze": {
+    "message": "Analyze link..."
+  }
+}

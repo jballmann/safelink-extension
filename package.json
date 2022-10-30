@@ -1,0 +1,25 @@
+{
+  "name": "safelink-extension",
+  "version": "0.0.1",
+  "description": "",
+  "main": "background.js",
+  "scripts": {
+    "start": "rollup --config rollup.config.js"
+  },
+  "type": "module",
+  "author": "jballmann",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "@cliqz/adblocker": "^1.25.1",
+    "@gorhill/publicsuffixlist": "github:gorhill/publicsuffixlist.js",
+    "punycode": "^2.1.1"
+  },
+  "devDependencies": {
+    "@rollup/plugin-json": "^5.0.1",
+    "@rollup/plugin-node-resolve": "^15.0.1",
+    "rollup": "^3.2.3",
+    "rollup-plugin-clear": "^2.0.7",
+    "rollup-plugin-copy": "^3.4.0",
+    "rollup-plugin-css-only": "^4.2.0"
+  }
+}
