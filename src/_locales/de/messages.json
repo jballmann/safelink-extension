@@ -1,6 +1,9 @@
 {
   "type_redirect": {
-    "message": "Weiterleitung - Es wird zu der unteren Adresse weitergeleitet"
+    "message": "Weiterleitung"
+  },
+  "description_redirect": {
+    "message": "Es wird zu der unteren Adresse weitergeleitet"
   },
   "type_trusted": {
     "message": "Vertrauenswürdig"
@@ -11,8 +14,38 @@
   "type_unknown": {
     "message": "Unbekannt"
   },
+  "type_custom": {
+    "message": "Nutzerdefiniert"
+  },
   "sector_edu": {
     "message": "Bildungseinrichtung"
+  },
+  "sector_ecom": {
+    "message": "Onlinehandel"
+  },
+  "sector_tec": {
+    "message": "Technologie"
+  },
+  "sector_web": {
+    "message": "Webdienst"
+  },
+  "sector_pds": {
+    "message": "Post / Paketdienst"
+  },
+  "sector_snet": {
+    "message": "Soziales Netzwerk"
+  },
+  "sector_ent": {
+    "message": "Unterhaltung"
+  },
+  "sector_epay": {
+    "message": "Bezahldienst"
+  },
+  "sector_telc": {
+    "message": "Telekommunikation / Hosting"
+  },
+  "sector_rtl": {
+    "message": "Einzelhandel"
   },
   "sector_fin": {
     "message": "Bank / Kreditinstitut"
@@ -29,7 +62,7 @@
   "target": {
     "message": "Ziel"
   },
-  "loading": {
+  "analyzeRedirect": {
     "message": "Weiterleitungs-Ziel wird ermittelt..."
   },
   "noRedirect": {
@@ -40,5 +73,53 @@
   },
   "analyze": {
     "message": "Analysiere Link..."
+  },
+  "mismatchedLink": {
+    "message": "Die Bezeichung des Links \"$text\" stimmt nicht mit der eigentlichen Zieladresse über ein."
+  },
+  "similarDomain": {
+    "message": "Die Domain hat große Ähnlichkeit mit der vertrauenswürdigen Domain \"$text\"."
+  },
+  "trustDomain": {
+    "message": "Dieser Domain vertrauen"
+  },
+  "preventDomain": {
+    "message": "Fenster für Domain nicht mehr anzeigen"
+  },
+  "general": {
+    "message": "Allgemein"
+  },
+  "lists": {
+    "message": "Listen"
+  },
+  "custom": {
+    "message": "Nutzerdefiniert"
+  },
+  "about": {
+    "message": "Über"
+  },
+  "option_automaticUpdates": {
+    "message": "Automatische Updates"
+  },
+  "option_preventTrusted": {
+    "message": "Zeige kein Fenster für vertrauenswürdige Domains an"
+  },
+  "update": {
+    "message": "Aktualisieren"
+  },
+  "addList": {
+    "message": "Liste hinzufügen"
+  },
+  "applyChanges": {
+    "message": "Änderungen ausführen"
+  },
+  "group_default": {
+    "message": "Standard"
+  },
+  "group_regions": {
+    "message": "Regionen"
+  },
+  "group_custom": {
+    "message": "Nutzerdefiniert"
   }
 }

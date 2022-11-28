@@ -1,265 +1,113 @@
-import './style/common.css';
-import './style/iconmonstr-font.css';
+import { createApp } from 'vue';
+import Modal from './Modal.vue';
 
+import { Request } from '@cliqz/adblocker';
 
-function renderDomainInfo({ url, domainDetails }) {
-  const i18n = messenger.i18n;
-  const lang = i18n.getMessage('@@ui_locale');
-  
-  let iconClass;
-  switch(domainDetails.type) {
-    case 'trusted':
-      iconClass = 'im-check-mark-circle';
-      break;
-    case 'suspicious':
-      iconClass = 'im-warning-circle';
-      break;
-    case 'redirect':
-      iconClass = 'im-flash';
-      break;
-    default:
-      iconClass = 'im-question';
-  }
-  
-  return `
-    <div class="table-row">
-      <div class="table-column py-1 pr-3 width-80px color-grey">URL</div>
-        <div class="table-column py-1 truncate color-grey" title="${url}">${ url }</div>
-      </div>
-      <div class="table-row">
-        <div class="table-column py-1 pr-3 width-80px">Domain</div>
-        <div class="table-column py-1">
-          <div class="flex space-between">
-            <div class="flex-auto">
-              <div class="color-${ domainDetails.type }">
-                <b>${ domainDetails.secondLevelDomain }</b>.${ domainDetails.topLevelDomain }
-              </div>
-              <div class="small-text color-grey">
-                ${ i18n.getMessage('type_' + domainDetails.type) }
-              </div>
-            </div>
-            <div class="flex-none">
-              <i class="im ${ iconClass } color-${ domainDetails.type }"></i>
-            </div>
-          </div>
-        </div>
-      </div>
-      ${(() => {
-        if (domainDetails.nm) {
-          return `
-            <div class="table-row">
-              <div class="table-column py-1 pr-3 width-80px">${ i18n.getMessage('by') }</div>
-              <div class="table-column py-1">
-                <div>${ domainDetails.nm }</div>
-                <div class="small-text color-grey">
-                  ${ i18n.getMessage('sector_' + domainDetails.se) }, ${ domainDetails.co }
-                </div>
-              </div>
-            </div>
-          `
-        }
-        if (domainDetails.type === 'unknown') {
-          return `
-            <div class="table-row">
-              <div class="table-column py-1 pr-3 width-80px"></div>
-              <div class="table-column py-1">
-                <a
-                  class="color-primary"
-                  href="https://github.com/jballmann/safelink/blob/master/docs/${lang}/domaincheck.md"
-                >
-                  ${ i18n.getMessage('checkDomain') } <i class="small-text im im-angle-right"></i>
-                </a>
-              </div>
-            </div>
-          `
-        }
-        return '';
-      })()}
-    </div>`;
-}
+let cachedPrevention = {};
 
-let buttonClickHandler;
-
-function renderOpenButton({ url, domainDetails }) {
-  const i18n = messenger.i18n;
-  
-  const openButtonBox = document.querySelector('.safelink--open-button');
-  openButtonBox.innerHTML = `
-    <div class="px-5 pb-4">
-      <a
-        class="safelink--open-link block bg-${ domainDetails.type } color-white p-2 centered border-radius unstyled"
-        href="${ url }"
-      >
-        ${ i18n.getMessage('openURL') }
-        ${
-          domainDetails.type === 'suspicious' ?
-            '<i class="small-text space-left im im-warning"></i>':
-            '<i class="small-text space-left im im-external-link"></i>'
-        }
-      </a>
-    </div>`;
-  const linkEl = document.querySelector('.safelink--open-link');
-  buttonClickHandler = (event) => {
-    hideLinkInfo();
-  }
-  linkEl.addEventListener('click', buttonClickHandler);
-}
-
-async function handleRedirectInfo(redirectUrl) {
-  const i18n = messenger.i18n;
-  
-  const redirectDomain = await messenger.runtime.sendMessage({
-    command: 'findRedirectDomain',
-    payload: redirectUrl
+async function initPrevention() {
+  cachedPrevention = await messenger.runtime.sendMessage({
+    command: 'getPrevention'
   });
-  const redirectInfoBox = document.querySelector('.safelink--redirect-info');
-  if (redirectDomain.notFound) {
-    redirectInfoBox.innerHTML = `${ i18n.getMessage('invalidRedirect') }`;
-    return;
-  }
-  if (!redirectDomain || redirectDomain.url === redirectUrl) {
-    redirectInfoBox.innerHTML = `${ i18n.getMessage('noRedirect') }`;
-    return;
-  }
-  redirectInfoBox.innerHTML = `
-    <div class="table table-fixed">
-      ${ renderDomainInfo({ url: redirectDomain.url, domainDetails: redirectDomain }) }
-    </div>`;
-  renderOpenButton({ url: redirectUrl, domainDetails: redirectDomain });
 }
 
-async function handleDomainInfo(url) {
-  const domainDetails = await messenger.runtime.sendMessage({
-    command: 'findDomain',
-    payload: url
-  });
-  
-  const i18n = messenger.i18n;
-  
-  const domainInfoBox = document.querySelector('.safelink--domain-info');
-  domainInfoBox.innerHTML = `
-    <div class="table table-fixed px-5 py-3">
-      ${ renderDomainInfo({ url, domainDetails }) }
-    </div>
-    ${(() => {
-      if (domainDetails.type === 'redirect') {
-        return `
-          <div class="safelink--redirect-info elevated border-radius-t px-5 pb-3 pt-4">
-            <div class="flex flex-centered">
-              <div class="loader space-right"></div> ${ i18n.getMessage('loading') }
-            </div>
-          </div>`
-      }
-      if (domainDetails.type === 'trusted') {
-        return `
-        <div class="centered px-5 pb-3">
-          <label class="inline-flex flex-centered cursor-pointer medium-text">
-            <input type="checkbox" class="safelink--checkbox-prevent space-right" />
-            Fenster für diese Domain nicht mehr anzeigen
-          </label>
-        </div>
-        `
-      }
-      if (domainDetails.type === 'unknown') {
-        return `
-        <div class="centered px-5 pb-3">
-          <label class="inline-flex flex-centered cursor-pointer medium-text">
-            <input type="checkbox" class="safelink--checkbox-trust space-right" />
-            Dieser Domain vertrauen
-          </label>
-        </div>
-        `
-      }
-      else {
-        return '';
-      }
-    })()}`
-    
-  renderOpenButton({ url, domainDetails });
-  if (domainDetails.type === 'redirect') {
-    handleRedirectInfo(url);
-  }
-}
-
-let wrapperClickHandler;
-
-function hideLinkInfo() {
-  const wrapper = document.querySelector('.safelink--inner');
-  const background = document.querySelector('.safelink--outer');
-  const linkEl = document.querySelector('.safelink--open-link');
-  
-  wrapper.removeEventListener('click', wrapperClickHandler);
-  linkEl.removeEventListener('click', buttonClickHandler);
-  document.body.removeChild(background);
+function storePrevention(domain) {
+  cachedPrevention[domain] = true;
   messenger.runtime.sendMessage({
-    command: 'log',
-    payload: 'close info'
+    command: 'setPrevention',
+    payload: cachedPrevention
   });
 }
 
-async function openLinkInfo(url) {
-  const isPrevented = await messenger.runtime.sendMessage({
-    command: 'getPrevention',
-    payload: url
-  });
-  if (isPrevented) {
+function getAncestor(el, tagName) {
+  tagName = tagName.toUpperCase();
+  while (el) {
+    if (el.nodeType === Node.ELEMENT_NODE && el.tagName == tagName) {
+        return el;
+    }
+    el = el.parentNode;
+  }
+  return null;
+}
+
+function isValidUrl(str) {
+  return /^(http(s)?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/=]*)$/i.test(str);
+}
+
+function getHostname(url) {
+  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    url = 'http://' + url;
+  }
+  return (new URL(url)).hostname;
+}
+
+let shadow;
+let el;
+let vueInstance;
+
+async function openInfo(e) {
+  const target = getAncestor(e.target, 'a');
+  const url = target.href;
+  
+  let request;
+  try {
+    request = Request.fromRawDetails({ url });
+  }
+  catch (err) {
+    console.log(err);
     return;
   }
   
-  const background = document.createElement('div');
-  background.classList.add('safelink--outer', 'fixed', 'full-window', 'backdrop', 'overflow-auto');
-  
-  const wrapper = document.createElement('div');
-  wrapper.classList.add('safelink--inner', 'flex', 'flex-centered', 'p-5', 'min-full-height');
-  
-  const container = document.createElement('div');
-  container.classList.add('safelink--container', 'bg-white', 'max-width-550px', 'border-radius');
-  
-  const i18n = messenger.i18n;
-  
-  container.innerHTML = `
-    <div class="safelink--domain-info">
-      <div class="table table-fixed px-5 py-3">
-        <div class="table-row">
-          <div class="table-column py-1 pr-3 width-80px color-grey">URL</div>
-          <div class="table-column py-1 truncate color-grey" title="${url}">${ url }</div>
-        </div>
-      </div>
-      <div class="flex flex-centered px-5 pb-3">
-        <div class="loader space-right"></div> ${ i18n.getMessage('analyze') }
-      </div>
-    </div>
-    <div class="safelink--open-button"></div>`;
-
-  wrapperClickHandler = (event) => {
-    if (event.target !== event.currentTarget) {
-      return;
-    }
-    hideLinkInfo();
+  if (cachedPrevention[request.domain]) {
+    return;
   }
-  wrapper.addEventListener('click', wrapperClickHandler);
+  e.preventDefault();
+  e.stopPropagation();
   
-  wrapper.appendChild(container);
-  background.appendChild(wrapper);
-  document.body.appendChild(background);
+  let mismatchedLink;
+  try {
+    if (target.innerText && isValidUrl(target.innerText) && getHostname(target.innerText) !== request.hostname) {
+      mismatchedLink = target.innerText;
+    }
+  }
+  catch (err) {
+    console.log(err);
+  }
   
-  renderOpenButton({ url, domainDetails: { type: 'unknown' }});
-  handleDomainInfo(url);
+  el = document.createElement('div');
+  el.style = 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;'
+  
+  vueInstance = createApp(Modal, { url, mismatchedLink, closeInfo, storePrevention });
+  vueInstance.mount(el);
+  
+  shadow.appendChild(el);
+}
+
+function createShadowDom() {
+  const shadowHost = document.createElement('div');
+  document.body.appendChild(shadowHost);
+  
+  shadow = shadowHost.attachShadow({ mode: 'open' });
+  
+  const styleLink = document.createElement("link");
+  styleLink.setAttribute("rel", "stylesheet");
+  styleLink.setAttribute("href", messenger.runtime.getURL('style.css'));
+  shadow.appendChild(styleLink);
+}
+
+async function closeInfo() {
+  vueInstance.unmount();
+  shadow.removeChild(el);
 }
 
 function handleLinkClicks() {
-console.log('handleLinkClicks');	
   document.querySelectorAll('a').forEach((link) => {
-	console.log(link, link.href);
-    if (!link.href.startsWith('http://') && !link.href.startsWith('https://')) {
-      return;
+    if (link.href.startsWith('http://') || link.href.startsWith('https://')) {
+      link.addEventListener('click', openInfo);
     }
-    link.addEventListener('click', (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      openLinkInfo(link.href);
-    });
   });
 }
+
+initPrevention();
+createShadowDom();
 handleLinkClicks();
-console.log('hello wolrd');

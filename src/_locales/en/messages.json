@@ -1,6 +1,9 @@
 {
   "type_redirect": {
-    "message": "Redirect - Redirects to the address below"
+    "message": "Redirect"
+  },
+  "description_redirect": {
+    "message": "Redirects to the address below"
   },
   "type_trusted": {
     "message": "Trustworthy"
@@ -11,8 +14,38 @@
   "type_unknown": {
     "message": "Unknown"
   },
+  "type_custom": {
+    "message": "Custom"
+  },
   "sector_edu": {
     "message": "Education institute"
+  },
+  "sector_ecom": {
+    "message": "eCommerce"
+  },
+  "sector_tec": {
+    "message": "Technology"
+  },
+  "sector_web": {
+    "message": "Web service"
+  },
+  "sector_pds": {
+    "message": "Mail service / Parcel delivery"
+  },
+  "sector_snet": {
+    "message": "Social network"
+  },
+  "sector_ent": {
+    "message": "Entertainment"
+  },
+  "sector_epay": {
+    "message": "Payment"
+  },
+  "sector_telc": {
+    "message": "Telecommunication / Hosting"
+  },
+  "sector_rtl": {
+    "message": "Retail"
   },
   "sector_fin": {
     "message": "Bank / Financial institution"
@@ -29,7 +62,7 @@
   "target": {
     "message": "Target"
   },
-  "loading": {
+  "analyzeRedirect": {
     "message": "Destination of redirection will be determined..."
   },
   "noRedirect": {
@@ -40,5 +73,53 @@
   },
   "analyze": {
     "message": "Analyze link..."
+  },
+  "mismatchedLink": {
+    "message": "The name of the link \"$text\" does not match the actual destination of the link."
+  },
+  "similarDomain": {
+    "message": "The domain has a high similarity to the trusted domain \"$text\"."
+  },
+  "trustDomain": {
+    "message": "Trust this domain"
+  },
+  "preventDomain": {
+    "message": "Do not show window for this domain again"
+  },
+  "general": {
+    "message": "General"
+  },
+  "lists": {
+    "message": "Lists"
+  },
+  "custom": {
+    "message": "Custom"
+  },
+  "about": {
+    "message": "About"
+  },
+  "option_automaticUpdates": {
+    "message": "Automatic updates"
+  },
+  "option_preventTrusted": {
+    "message": "Do not show window for trusted domains"
+  },
+  "update": {
+    "message": "Update"
+  },
+  "addList": {
+    "message": "Add list"
+  },
+  "applyChanges": {
+    "message": "Apply changes"
+  },
+  "group_default": {
+    "message": "Default"
+  },
+  "group_regions": {
+    "message": "Regions"
+  },
+  "group_custom": {
+    "message": "Custom"
   }
 }

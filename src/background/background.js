@@ -1,46 +1,37 @@
-import { FiltersEngine, Request } from '@cliqz/adblocker';
-import Bucket from './bucket.js';
+/*eslint-enable*/
 
-const TRUSTED_URL = 'https://api.jsonserve.com/tqk64R';
-const REDIRECT_URL = 'https://api.jsonserve.com/K2ViLL';
-const ORGS_URL = 'https://api.jsonserve.com/gtP0QG';
-const BLOCKLISTS_URL = 'https://api.jsonserve.com/UKJ4U_';
+import { Request } from '@cliqz/adblocker';
+import { findBestMatch } from 'string-similarity';
 
-let trustedBucket;
-let redirectBucket;
-let orgsBucket;
-let blocklistsBucket;
-let filterEngine;
+import ListIndex from './register.js';
+import { updateMyLists, updateLists, addCustomList } from './update.js';
+import { getDerefUrl } from './dereferrer.js';
+import { removeProtocol, splitupUrl } from '../utilities/url.js';
 
-function hasKey(obj, { domain, hostname }) {
-  const subdomains = hostname.substring(0, -1 * domain.length - 1).split('.');
-  if (obj[domain]) {
-    return obj[domain];
+let register;
+
+async function trustUnknown(domain) {
+  const custom = (await messenger.storage.local.get('settings/custom'))['settings/custom'];
+  try {
+    await messenger.storage.local.set({
+      'settings/custom': {
+        ...custom,
+        [domain]: true
+      }
+    });
   }
-  let searchString = domain;
-  for (let i = subdomains.length - 1; i >= 0; i--) {
-    if (subdomains[i] !== '') {
-      searchString = subdomains[i] + '.' + searchString;
-      if (obj[searchString]) {
-        return obj[searchString];
-      } 
-    }
+  catch (err) {
+    console.log(err);
   }
-  return null;
 }
 
-async function getPrevention(url) {
-  const request = Request.fromRawDetails({ url });
-  const { prevention } = await messenger.storage.local.get('prevention');
-  console.log('get', prevention);
-  return prevention ? prevention.indexOf(request.domain) > -1 : false;
+async function getPrevention() {
+  const prevention = (await messenger.storage.local.get('settings/prevention'))['settings/prevention'];
+  return { ...prevention };
 }
 
-async function setPrevention(domain) {
-  let { prevention } = await messenger.storage.local.get('prevention');
-  prevention.push(domain);
-  console.log('add', prevention);
-  await messenger.storage.local.set({ prevention });
+async function setPrevention(prevention) {
+  await messenger.storage.local.set({ 'settings/prevention': prevention });
 }
 
 async function findRedirectDomain(url) {
@@ -51,13 +42,18 @@ async function findRedirectDomain(url) {
   catch (err) {
     return;
   }
-  if (response.status === 404) {
-    return { notFound: true }
+  if (removeProtocol(response.url) === removeProtocol(url)) {
+    if (response.status === 404) {
+      return { notFound: true };
+    }
+    return { invalid: true };
   }
   if (!response.redirected) {
-    return;
+    return { invalid: true };
   }
-  return { url: response.url, ...(await findDomain(response.url)) };
+  
+  const responseUrl = response.url;
+  return { url: responseUrl, ...(await findDomain(responseUrl)) };
 }
 
 async function findDomain(urlString) {
@@ -70,20 +66,27 @@ async function findDomain(urlString) {
     domain: request.domain,
     secondLevelDomain: sld,
     topLevelDomain: tld.join('.')
+  };
+  
+  // check for userdefined
+  const custom = (await messenger.storage.local.get('settings/custom'))['settings/custom'];
+  if (custom && custom[request.domain]) {
+    return {
+      type: 'custom',
+      ...domainInfo
+    };
   }
   
-  // look up domain and subdomains in trusted hosts bucket
-  const trusted = await trustedBucket.get();
+  const index = register.get();
+  console.log(index);
   
-  const trustedOrgId = hasKey(trusted, {
-    hostname: request.hostname,
-    domain: request.domain
-  });
+  // look up in trusted hosts
+  const trusted = index.trusted.domains;
   
-  if (trustedOrgId) {
-    console.log('trusted');
+  if (trusted[domainInfo.domain]) {
+    const trustedOrgId = trusted[request.domain];
     
-    const orgDetails = (await orgsBucket.get())[trustedOrgId] || {};
+    const orgDetails = index.trusted.orgs[trustedOrgId] || {};
     console.log(orgDetails);
     return {
       type: 'trusted',
@@ -92,43 +95,76 @@ async function findDomain(urlString) {
     };
   }
   
-  // look up domain in redirect hosts bucket
-  const isRedirect = (await redirectBucket.get()).indexOf(request.domain) > -1;
+  // look up domain in redirect hosts
+  const isRedirect = index.redirect.redirects.indexOf(request.domain) > -1;
   
   if (isRedirect) {
     console.log('redirect');
     return {
       type: 'redirect',
       ...domainInfo
+    };
+  }
+  
+  const { path, query } = splitupUrl(urlString);
+  // look up in dereferrers
+  for (const dereferrer of index.redirect.dereferrers) {
+    let derefUrl = getDerefUrl({ path, query }, dereferrer);
+    if (derefUrl) {
+      if (/^[a-zA-Z0-9+/]+(={,2})?$/.test(derefUrl) && dereferrer.format?.includes('base64')) {
+        try {
+          derefUrl = atob(derefUrl);
+        }
+        catch {
+          continue;
+        }
+      }
+      return {
+        type: 'redirect',
+        dereferrerTarget: derefUrl,
+        ...domainInfo
+      }
     }
   }
   
-  const { match } = filterEngine.match(request);
-  
   // look up in filter for suspicious urls
+  const { match } = index.suspicious.match(request);
+  
   if (match) {
     console.log('suspicious');
     return {
       type: 'suspicious',
       ...domainInfo
-    }
+    };
   }
+  
+  // calculate similarity with trusted domains
+  const { bestMatch } = findBestMatch(domainInfo.domain, Object.keys(trusted));
   
   console.log('unknown');
   return {
     type: 'unknown',
+    similar: bestMatch,
     ...domainInfo
-  }
+  };
+}
+
+function openBrowser(url) {
+  messenger.windows.openDefaultBrowser(url);
+}
+
+function openTab(url) {
+  messenger.tabs.create({ url });
 }
 
 async function registerContentScripts() {
   console.log('register content scripts');
   await messenger.messageDisplayScripts.register({
     js: [
-      { file: 'content/content.js' }
+      { file: 'content.js' }
     ],
     css: [
-      { file: 'content/style.css' }
+      { file: 'inject-iconmonstr.css' }
     ]
   });
 }
@@ -137,53 +173,54 @@ async function registerRuntimeMessageHandler() {
   console.log('register message handler');
   messenger.runtime.onMessage.addListener(async (message) => { 
     console.log('retrieved msg:', message);
-    if (message && message.hasOwnProperty("command")) {
+    if (message && message['command']) {
       // Check for known commands.
       switch (message.command) {
-        case "log": console.log(message.payload); break;
-        case "findDomain": return await findDomain(message.payload); break;
-        case "findRedirectDomain": return await findRedirectDomain(message.payload); break;
-        case "getPrevention": return await getPrevention(message.payload); break;
-        case "setPrevention": return await setPrevention(message.payload);
+        case 'log':
+          console.log(message.payload);
+          break;
+        case 'findDomain':
+          return await findDomain(message.payload);
+        case 'findRedirectDomain':
+          return await findRedirectDomain(message.payload);
+        case 'trustUnknown':
+          return await trustUnknown(message.payload);
+        case 'getPrevention':
+          return await getPrevention();
+        case 'setPrevention':
+          return await setPrevention(message.payload);
+        case 'openBrowser':
+          return openBrowser(message.payload);
+        case 'openTab':
+          return openTab(message.payload);
+        case 'update':
+          return await updateLists(message.payload);
+        case 'build':
+          return await register.rebuild();
+        case 'addList':
+          return await addCustomList(message.payload);
       }
     }
   });
 }
 
-async function initFilter() {
-  const engine = await FiltersEngine.fromLists(window.fetch, (await blocklistsBucket.get()));
-  await messenger.storage.local.set({ filterEngine: engine.serialize() });
-  let stored = await messenger.storage.local.get('filterEngine');
-  filterEngine = FiltersEngine.deserialize(stored.filterEngine);
-}
+messenger.runtime.onInstalled.addListener(function (details) {
+  if (details.reason === 'install') {
+    messenger.runtime.openOptionsPage();
+  }
+});
 
 async function run() {
   console.log('run...');
   
-  trustedBucket = new Bucket('trusted', 'json');
-  trustedBucket.fetch(TRUSTED_URL);
-  
-  console.log('trusted ok');
-  
-  orgsBucket = new Bucket('orgs', 'json');
-  orgsBucket.fetch(ORGS_URL);
-  
-  console.log('orgs ok');
-  
-  redirectBucket = new Bucket('redirect', 'json');
-  redirectBucket.fetch(REDIRECT_URL);
-  
-  console.log('redirect ok');
-  
-  blocklistsBucket = new Bucket('blocklists', 'json');
-  await blocklistsBucket.fetch(BLOCKLISTS_URL);
-  
-  console.log('blocklists ok');
-  
-  initFilter();
+  (async () => {
+    await updateMyLists();
+    await updateLists();
+    register = new ListIndex();
+  })();
   
   registerContentScripts();
   registerRuntimeMessageHandler();
 }
 
-document.addEventListener("DOMContentLoaded", run);
+document.addEventListener('DOMContentLoaded', run);

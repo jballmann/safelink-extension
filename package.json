@@ -1,25 +1,38 @@
 {
   "name": "safelink-extension",
   "version": "0.0.1",
-  "description": "",
   "main": "background.js",
   "scripts": {
-    "start": "rollup --config rollup.config.js"
+    "dev": "rollup --config rollup.config --watch",
+    "build": "rollup --config rollup.config.js",
+    "package": "npm run build && web-ext build -o"
   },
   "type": "module",
   "author": "jballmann",
   "license": "GPL-3.0",
   "dependencies": {
     "@cliqz/adblocker": "^1.25.1",
-    "@gorhill/publicsuffixlist": "github:gorhill/publicsuffixlist.js",
-    "punycode": "^2.1.1"
+    "string-similarity": "^4.0.4",
+    "vue": "^3.2.41"
   },
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^23.0.3",
+    "@rollup/plugin-eslint": "^9.0.1",
     "@rollup/plugin-json": "^5.0.1",
     "@rollup/plugin-node-resolve": "^15.0.1",
+    "eslint": "^8.28.0",
     "rollup": "^3.2.3",
     "rollup-plugin-clear": "^2.0.7",
     "rollup-plugin-copy": "^3.4.0",
-    "rollup-plugin-css-only": "^4.2.0"
+    "rollup-plugin-css-only": "^4.2.0",
+    "rollup-plugin-import-css": "^3.1.0",
+    "rollup-plugin-inject-process-env": "^1.3.1",
+    "rollup-plugin-vue": "^6.0.0",
+    "rollup-plugin-windicss": "^1.8.8",
+    "web-ext": "^7.4.0",
+    "windicss": "^3.5.6"
+  },
+  "webExt": {
+    "sourceDir": "dist"
   }
 }
