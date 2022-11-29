@@ -166,6 +166,13 @@
           command: 'findDomain',
           payload: this.url
         });
+        const settings = (await messenger.storage.local.get('settings/general'))['settings/general'];
+        if (
+          settings?.preventTrusted &&
+          (this.domainInfo.type === 'trusted' || this.domainInfo.type === 'custom')
+        ) {
+          this.openURL();
+        }
         this.loading = false;
         this.buttonStatus = this.domainInfo.type || 'unknown';
         if (this.domainInfo?.type === 'redirect') {

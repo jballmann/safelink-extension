@@ -25,7 +25,7 @@
     <div>
       <h2 class="text-lg text-gray-500 mb-3">
         <i class="im im-eye-off mr-2 transform translate-y-2px"></i>
-        Fenster nicht anzeigen für
+        {{ getMessage('group_dontShow') }}
       </h2>
       <div class="shadow py-2 rounded space-y-2">
         <div

@@ -31,7 +31,7 @@
             </div>
             <div class="text-xs text-gray-500">
             {{ getMessage('type_' + data.type) }}
-            <template v-if="getMessage('description_' + data.type)">
+            <template v-if="data.type === 'redirect'">
               - {{ getMessage('description_' + data.type) }}
             </template>
             </div>

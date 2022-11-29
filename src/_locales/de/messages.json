@@ -84,7 +84,7 @@
     "message": "Dieser Domain vertrauen"
   },
   "preventDomain": {
-    "message": "Fenster für Domain nicht mehr anzeigen"
+    "message": "Fenster für diese Domain nicht mehr anzeigen"
   },
   "general": {
     "message": "Allgemein"
@@ -99,10 +99,10 @@
     "message": "Über"
   },
   "option_automaticUpdates": {
-    "message": "Automatische Updates"
+    "message": "Automatische Updates der Listen"
   },
   "option_preventTrusted": {
-    "message": "Zeige kein Fenster für vertrauenswürdige Domains an"
+    "message": "Öffne URLs mit vertrauenswürdiger Domain sofort"
   },
   "update": {
     "message": "Aktualisieren"
@@ -121,5 +121,26 @@
   },
   "group_custom": {
     "message": "Nutzerdefiniert"
+  },
+  "group_dontShow": {
+    "message": "Fenster nicht anzeigen für"
+  },
+  "loading": {
+    "message": "Lade..."
+  },
+  "insertListUrl": {
+    "message": "Listen-URL hier eingeben"
+  },
+  "hide": {
+    "message": "Ausblenden"
+  },
+  "inspect": {
+    "message": "Ansehen"
+  },
+  "website": {
+    "message": "Website"
+  },
+  "remove": {
+    "message": "Entfernen"
   }
 }

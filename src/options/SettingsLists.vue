@@ -1,6 +1,6 @@
 <template>
   <div v-if="loading">
-    Lade Listen ...
+    {{ getMessage('loading') }}
   </div>
   <div v-else class="space-y-8 mb-16">
     <div class="space-x-2">
@@ -39,7 +39,7 @@
           ref="urlInput"
           class="text-sm px-2 py-1 w-full border"
           type="text"
-          placeholder="Insert list URL here"
+          :placeholder="getMessage('insertListUrl')"
           v-model="listUrl"
         />
       </div>
@@ -48,7 +48,7 @@
           @click="showAddList = false"
           class="option-btn bg-gray-400 hover:bg-gray-500"
         >
-          Ausblenden
+          {{ getMessage('hide') }}
         </button>
         <button
           type="submit"

@@ -34,25 +34,27 @@
             <button class="dropdown-btn">
               <i class="im im-menu-dot-v"></i>
               <div class="dropdown">
-                <a @click="openInspect(list.url)">Ansehen</a>
+                <a @click="openInspect(list.url)">
+                  {{ getMessage('inspect') }}
+                </a>
                 <a
                   v-if="list.web"
                   @click="openBrowser(list.web)"
                 >
-                  Website
+                  {{ getMessage('website') }}
                 </a>
                 <a
                   v-if="!list.off"
                   @click="$emit('update', list.id)"
                   :class="loadingLists.indexOf(list.id) > -1 ? 'text-gray-200 pointer-events-none' : ''"
                 >
-                  Aktualisieren
+                  {{ getMessage('update') }}
                 </a>
                 <a
                   v-if="group === 'custom'"
                   @click="$emit('remove', list.id)"
                 >
-                  Entfernen
+                  {{ getMessage('remove') }}
                 </a>
               </div>
             </button>

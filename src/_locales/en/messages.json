@@ -99,10 +99,10 @@
     "message": "About"
   },
   "option_automaticUpdates": {
-    "message": "Automatic updates"
+    "message": "Automatic list updates"
   },
   "option_preventTrusted": {
-    "message": "Do not show window for trusted domains"
+    "message": "Open URLs with trusted domain immediately"
   },
   "update": {
     "message": "Update"
@@ -121,5 +121,26 @@
   },
   "group_custom": {
     "message": "Custom"
+  },
+  "group_dontShow": {
+    "message": "Do not show window for"
+  },
+  "loading": {
+    "message": "Loading..."
+  },
+  "insertListUrl": {
+    "message": "Insert list URL here"
+  },
+  "hide": {
+    "message": "Hide"
+  },
+  "inspect": {
+    "message": "View"
+  },
+  "website": {
+    "message": "Website"
+  },
+  "remove": {
+    "message": "Remove"
   }
 }

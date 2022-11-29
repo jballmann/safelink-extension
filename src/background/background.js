@@ -3,7 +3,7 @@
 import { Request } from '@cliqz/adblocker';
 import { findBestMatch } from 'string-similarity';
 
-import ListIndex from './register.js';
+import Register from './register.js';
 import { updateMyLists, updateLists, addCustomList } from './update.js';
 import { getDerefUrl } from './dereferrer.js';
 import { removeProtocol, splitupUrl } from '../utilities/url.js';
@@ -204,8 +204,11 @@ async function registerRuntimeMessageHandler() {
   });
 }
 
-messenger.runtime.onInstalled.addListener(function (details) {
+messenger.runtime.onInstalled.addListener(async function (details) {
   if (details.reason === 'install') {
+    await messenger.storage.local.set({ 'settings/general': {
+      automaticUpdates: true
+    }});
     messenger.runtime.openOptionsPage();
   }
 });
@@ -216,7 +219,7 @@ async function run() {
   (async () => {
     await updateMyLists();
     await updateLists();
-    register = new ListIndex();
+    register = new Register();
   })();
   
   registerContentScripts();
