@@ -35,6 +35,6 @@ To start developing,
 
 To package the extension for ready use in Thunderbird use `npm run package`.
 
-## Licence
+## License
 
-[GPLv3](./licence.txt)
+[GPLv3](./LICENSE)
