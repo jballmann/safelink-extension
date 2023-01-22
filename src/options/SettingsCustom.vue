@@ -49,6 +49,8 @@
 
 <script>
   import { getMessage } from '../utilities/i18n.js';
+  import Connector from '../utilities/connector.js';
+  const { storage } = Connector;
   
   export default {
     data() {
@@ -60,23 +62,22 @@
       }
     },
     async mounted() {
-      this.domains.custom = (await messenger.storage.local.get('settings/custom'))['settings/custom'];
-      this.domains.prevention = (await messenger.storage.local.get('settings/prevention'))['settings/prevention'];
+      this.domains.custom = await storage.get('settings/custom');
+      this.domains.prevention = await storage.get('settings/prevention');
       messenger.storage.local.onChanged.addListener(async (type) => {
         if (type['settings/custom']) {
-          this.domains.custom = (await messenger.storage.local.get('settings/custom'))['settings/custom'];
+          this.domains.custom = await storage.get('settings/custom');
         }
         if (type['settings/prevention']) {
-          this.domains.prevention = (await messenger.storage.local.get('settings/prevention'))['settings/prevention'];
+          this.domains.prevention = await storage.get('settings/prevention');
         }
       });
     },
     methods: {
       getMessage,
       deleteDomain(type, domain) {
-        const domains = JSON.parse(JSON.stringify(this.domains[type]));
-        delete domains[domain];
-        messenger.storage.local.set({ ['settings/' + type]: domains });
+        delete this.domains[type][domain];
+        messenger.storage.local.set('settings/' + type, this.domains[type]);
       }
     }
   }

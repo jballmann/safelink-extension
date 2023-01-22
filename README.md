@@ -1,4 +1,13 @@
-# Safelink Extension for Thunderbird
+<h1 align="center">
+  <sub>
+    <img src="./src/assets/logo/32x32.png" />
+  </sub>
+  Safelink Extension
+</h1>
+<p align="center">
+    Thunderbird •
+    <a href="https://github.com/jballmann/safelink-outlook">Outlook</a>
+</p>
 
 This extension protects you against phishing and malicious links in emails. Instead that an website is open right after a click, a window shows you all important information about a domain before you enter the web.
 
@@ -6,13 +15,13 @@ This extension protects you against phishing and malicious links in emails. Inst
 
 ![Trusted](docs/screenshots/trusted.jpg)
 
-![](docs/screenshots/redirect.jpg)
+![Redirect](docs/screenshots/redirect.jpg)
 
-![](docs/screenshots/suspicious.jpg)
+![Suspicious](docs/screenshots/suspicious.jpg)
 
-![](docs/screenshots/similar.jpg)
+![Similar to Trusted](docs/screenshots/similar.jpg)
 
-## Developement
+## Development
 
 To start developing,
 

@@ -1,7 +1,7 @@
 {
   "name": "safelink-extension",
   "version": "0.0.1",
-  "main": "background.js",
+  "main": "./dist/background.js",
   "scripts": {
     "dev": "rollup --config rollup.config --watch",
     "build": "rollup --config rollup.config.js",
@@ -12,7 +12,7 @@
   "license": "GPL-3.0",
   "dependencies": {
     "@cliqz/adblocker": "^1.25.1",
-    "string-similarity": "^4.0.4",
+    "safelink-core": "git+https://github.com/jballmann/safelink-core.git",
     "vue": "^3.2.41"
   },
   "devDependencies": {

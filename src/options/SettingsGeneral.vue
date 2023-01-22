@@ -29,6 +29,7 @@
 
 <script>
   import { getMessage } from '../utilities/i18n.js';
+  import { storage } from '../utilities/connector.js';
   
   export default {
     data() {
@@ -37,14 +38,14 @@
       }
     },
     async mounted() {
-      this.settings = (await messenger.storage.local.get('settings/general'))['settings/general'] || {};
+      this.settings = await storage.get('settings/general');
     },
     methods: {
       getMessage,
       handleChange(event) {
         const target = event.target;
         this.settings[target.value] = target.checked;
-        messenger.storage.local.set({ 'settings/general': JSON.parse(JSON.stringify(this.settings)) });
+        storage.set('settings/general', this.settings);
       }
     }
   }

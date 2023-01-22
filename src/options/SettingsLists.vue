@@ -104,6 +104,7 @@
 
 <script>
   import { getMessage } from '../utilities/i18n.js';
+  import { storage } from '../utilities/connector.js';
   
   import SettingsListsCard from './SettingsListsCard.vue';
   
@@ -123,11 +124,11 @@
       }
     },
     async mounted() {
-      this.myLists = (await messenger.storage.local.get('settings/lists'))['settings/lists'];
+      this.myLists = await storage.get('settings/lists');
       this.loading = false;
       messenger.storage.local.onChanged.addListener(async (type) => {
         if (type['settings/lists']) {
-          this.myLists = (await messenger.storage.local.get('settings/lists'))['settings/lists'];
+          this.myLists = await storage.get('settings/lists');
           this.changeMade = true;
         }
       });
@@ -164,11 +165,13 @@
       },
       toggleList({ id, on }) {
         this.myLists[id].off = !on;
-        messenger.storage.local.set({ 'settings/lists': JSON.parse(JSON.stringify(this.myLists)) });
+        storage.set('settings/lists', this.myLists);
+        this.changeMade = true;
       },
       removeList(id) {
         delete this.myLists[id];
-        messenger.storage.local.set({ 'settings/lists': JSON.parse(JSON.stringify(this.myLists)) });
+        storage.set('settings/lists', this.myLists);
+        this.changeMade = true;
       },
       async updateList(id) {
         this.loadingLists.push(id);
@@ -210,6 +213,7 @@
         });
         this.showAddList = false;
         this.listUrl = null;
+        this.changeMade = true;
       }
     }
   }
